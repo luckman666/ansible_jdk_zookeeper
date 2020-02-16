@@ -1,0 +1,4 @@
+server1_hostname: 192.168.1.117
+server2_hostname: 192.168.1.118
+server3_hostname: 192.168.1.119
+BigdataDir: /opt/hzgc 

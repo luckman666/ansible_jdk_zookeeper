@@ -1,0 +1,10 @@
+tickTime=2000
+initLimit=20
+syncLimit=10
+dataDir={{BigdataDir}}/{{zookeeperVersion}}/data
+dataLogDir={{BigdataDir}}/{{zookeeperVersion}}/dataLogDir
+clientPort=2181
+quorumListenOnAllIPs=true
+server.1={{server1_hostname}}:2888:3888
+server.2={{server2_hostname}}:2888:3888
+server.3={{server3_hostname}}:2888:3888

@@ -1,0 +1,12 @@
+#!/bin/bash
+#chkconfig:2345 20 90
+#description:zookeeper
+#processname:zookeeper
+export JAVA_HOME={{JAVAHOME}}
+case $1 in
+          start) su root {{BigdataDir}}/{{zookeeperVersion}}/bin/zkServer.sh start;;
+          stop) su root {{BigdataDir}}/{{zookeeperVersion}}/bin/zkServer.sh stop;;
+          status) su root {{BigdataDir}}/{{zookeeperVersion}}/bin/zkServer.sh status;;
+          restart) su root {{BigdataDir}}/{{zookeeperVersion}}/bin/zkServer.sh restart;;
+          *)  echo "require start|stop|status|restart"  ;;
+esac

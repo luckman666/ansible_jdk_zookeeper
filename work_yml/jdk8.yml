@@ -1,0 +1,25 @@
+---
+
+- hosts: "{{host}}"
+  gather_facts: false
+  remote_user: root
+  ignore_errors: yes
+  roles: 
+    - jdk8
+  tasks:
+    - name: delete old path
+      file: path={{BigdataDir}} state=absent
+      tags: ['delete base path'] 
+    - name: mkdir jdk directory  #创建安装目录
+      file: path={{BigdataDir}} state=directory mode=0755
+    - name: copy and unzip jdk  #解压安装
+      unarchive: src={{AnsibleDir}}/files/jdk-8u241-linux-x64.tar.gz dest={{BigdataDir}} copy=yes
+    - name: set env  #设置环境变量
+      lineinfile: dest=/etc/profile insertafter="{{item.position}}" line="{{item.value}}" state=present
+      with_items:
+        - {position: EOF, value: "export JAVA_HOME={{BigdataDir}}/jdk1.8.0_241"}
+        - {position: EOF, value: "export PATH=$JAVA_HOME/bin:$PATH"}
+    - name: chmod bin  #修改执行权限
+      file: dest={{BigdataDir}}/jdk1.8.0_241/bin mode=0755 recurse=yes
+    - name: enforce env  #刷新环境变量
+      shell: source /etc/profile

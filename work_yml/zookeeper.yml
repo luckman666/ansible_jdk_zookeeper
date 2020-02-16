@@ -1,0 +1,41 @@
+---
+
+- hosts: zookeeper 
+  gather_facts: false
+  remote_user: root
+  vars: 
+    - AnsibleDir: /etc/ansible 
+    - zookeeperVersion: apache-zookeeper-3.5.7-bin
+    - JAVAHOME: /opt/hzgc/jdk1.8.0_241
+  ignore_errors: yes
+  roles: 
+    - zookeeper 
+  tasks:
+    - name: delete base path
+      file: path={{BigdataDir}}/apache-zookeeper-3.5.7 state=absent
+    - name: delete auto set
+      file: path=/etc/init.d/zookeeper state=absent
+    - name: mkdir base path
+      file: path={{BigdataDir}} state=directory mode=0755
+    - name: install zookeeper  #解压安装
+      unarchive: src={{AnsibleDir}}/files/{{zookeeperVersion}}.tar.gz dest={{BigdataDir}} copy=yes
+    - name: mkdir zookeeper directory
+      file: path={{BigdataDir}}/{{zookeeperVersion}}/{{item}} state=directory mode=0755
+      with_items:
+        - dataLogDir 
+        - data
+    - name: create myid
+      file: path={{BigdataDir}}/{{zookeeperVersion}}/data/myid state=touch
+    - name: install configuration file for zookeeper
+      template: src={{AnsibleDir}}/roles/zookeeper/templates/zoo.cfg.j2 dest={{BigdataDir}}/{{zookeeperVersion}}/conf/zoo.cfg
+    - name: add myid file
+      shell: echo {{ myid }} > {{BigdataDir}}/{{zookeeperVersion}}/data/myid
+    - name: aotu start zookeeper
+      template: src={{AnsibleDir}}/roles/zookeeper/templates/zookeeper.j2 dest=/etc/init.d/zookeeper
+    - name: chmod zookeeper
+      shell: chmod +x /etc/init.d/zookeeper
+    - name: set auto
+      shell: chkconfig  --add zookeeper    
+    - name: start zookeeper
+      shell: systemctl start zookeeper
+      tags: ['star zookeeper'] 
